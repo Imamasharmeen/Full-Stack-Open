@@ -12,8 +12,7 @@ const App = () => {
   const [search, setSearch] = useState('');
   const [notification, setNotification] = useState({ message: '', type: '' });
 
-
-//
+  // ✅ Show notification helper
   const showNotification = (message, type = 'success') => {
     setNotification({ message, type });
     setTimeout(() => {
@@ -21,84 +20,86 @@ const App = () => {
     }, 4000);
   };
 
+  // ✅ Load all persons on mount
   useEffect(() => {
     apiService
       .getAll()
-      .then(initialPersons => {
-        setPersons(initialPersons);
-      })
+      .then(initialPersons => setPersons(initialPersons))
       .catch(error => {
-        console.error('Error fetching data:', error);
-         showNotification('Error fetching contacts', 'error');
+        showNotification('Failed to fetch contacts', 'error');
+        console.error(error);
       });
   }, []);
 
-  const handleNameChange = (event) => setNewName(event.target.value);
-  const handleNumberChange = (event) => setNewNumber(event.target.value);
-  const handleSearchChange = (event) => setSearch(event.target.value);
+  // ✅ Input Handlers
+  const handleNameChange = e => setNewName(e.target.value);
+  const handleNumberChange = e => setNewNumber(e.target.value);
+  const handleSearchChange = e => setSearch(e.target.value);
 
+  // ✅ Add or update person
   const addName = (event) => {
     event.preventDefault();
-
-    const newPerson = {
-      name: newName,
-      number: newNumber,
-    };
-
-    const existingPerson = persons.find(person => person.name === newName);
+    const existingPerson = persons.find(p => p.name === newName);
+    const newPerson = { name: newName, number: newNumber };
 
     if (existingPerson) {
       const confirmUpdate = window.confirm(
-        `${newName} is already added to phone book, replace the old number with a new one?`
+        `${newName} is already added. Replace the old number with a new one?`
       );
+
       if (confirmUpdate) {
         const updatedPerson = { ...existingPerson, number: newNumber };
 
         apiService
           .update(existingPerson.id, updatedPerson)
           .then(returnedPerson => {
-            setPersons(persons.map(person =>
-              person.id !== existingPerson.id ? person : returnedPerson
+            setPersons(persons.map(p => 
+              p.id !== existingPerson.id ? p : returnedPerson
             ));
+            showNotification(`Updated ${returnedPerson.name}`);
             setNewName('');
             setNewNumber('');
-             showNotification(`Updated ${returnedPerson .name}`);
           })
           .catch(error => {
-            console.error('Error updating person:', error);
-            showNotification(`Info for ${newName} already removed`, 'error');
+            // ✅ Handle 404 (not found on server)
+            showNotification(
+              `Information for ${newName} has already been removed from the server`,
+              'error'
+            );
             setPersons(persons.filter(p => p.id !== existingPerson.id));
           });
       }
-      return;
-    }
 
-    apiService
-      .create(newPerson)
-      .then(returnedPerson => {
-        setPersons([...persons, returnedPerson]);
-          showNotification(`Added ${returnedPerson .name}`);
-        setNewName('');
-        setNewNumber('');
-      })
-      .catch(error => {
-        console.error('Error adding person:', error);
-           showNotification('Failed to add person', 'error');
-      });
+    } else {
+      // ✅ Create new person
+      apiService
+        .create(newPerson)
+        .then(returnedPerson => {
+          setPersons([...persons, returnedPerson]);
+          showNotification(`Added ${returnedPerson.name}`);
+          setNewName('');
+          setNewNumber('');
+        })
+        .catch(error => {
+          showNotification('Failed to add person', 'error');
+          console.error(error);
+        });
+    }
   };
-// Function to handle deletion of a person
+
+  // ✅ Delete person
   const handleDelete = (id, name) => {
     if (window.confirm(`Delete ${name}?`)) {
       apiService
         .remove(id)
         .then(() => {
-          setPersons(persons.filter(person => person.id !== id));
+          setPersons(persons.filter(p => p.id !== id));
           showNotification(`Deleted ${name}`);
         })
         .catch(error => {
-          console.error('Error deleting person:', error);
-          alert(`Information of ${name} has already been removed from server`);
-          setPersons(persons.filter(person => person.id !== id));
+          showNotification(`Information of ${name} already removed`, 'error');
+          setPersons(persons.filter(p => p.id !== id));
+          console.error(error);
         });
     }
   };
@@ -110,8 +111,10 @@ const App = () => {
   return (
     <div>
       <h2>PhoneBook</h2>
-      <Filter value={search} onChange={handleSearchChange} />
+
       <Notification message={notification.message} type={notification.type} />
+
+      <Filter value={search} onChange={handleSearchChange} />
 
       <h3>Add a new</h3>
       <PersonForm
