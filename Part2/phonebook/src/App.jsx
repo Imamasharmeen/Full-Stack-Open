@@ -12,9 +12,11 @@ const App = () => {
 
   // Fetch initial data from the backend
   useEffect(() => {
-   apiService.getAll()
-      .then(response => {
-        setPersons(response.data);
+    apiService.getAll()
+      // axios.get('http://localhost:3002/persons')
+      .then(initialPersons => {
+        setPersons(initialPersons);
+        
       })
       .catch(error => {
         console.error('Error fetching data:', error);
@@ -39,8 +41,8 @@ const App = () => {
     };
 
     apiService.create(newPerson)
-      .then(response => {
-        setPersons([...persons, response.data]); 
+      .then(returnedPerson  => {
+        setPersons([...persons, returnedPerson ]); 
         setNewName('');
         setNewNumber('');
       })
@@ -49,7 +51,7 @@ const App = () => {
       });
   };
 
-  const filteredPersons = persons.filter(person =>
+  const filteredPersons = persons?.filter(person =>
     person.name.toLowerCase().includes(search.toLowerCase())
   );
 
