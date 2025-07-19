@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import Filter from './components/Filter.jsx';
 import PersonForm from './components/PersonForm.jsx';
 import Persons from './components/Persons.jsx';
-import axios from 'axios';
+import apiService from './service/api.js';
 
 const App = () => {
   const [persons, setPersons] = useState([]);
@@ -12,7 +12,7 @@ const App = () => {
 
   // Fetch initial data from the backend
   useEffect(() => {
-    axios.get('http://localhost:3002/persons')
+   apiService.getAll()
       .then(response => {
         setPersons(response.data);
       })
@@ -38,7 +38,7 @@ const App = () => {
       number: newNumber,
     };
 
-    axios.post('http://localhost:3002/persons', newPerson)
+    apiService.create(newPerson)
       .then(response => {
         setPersons([...persons, response.data]); 
         setNewName('');
