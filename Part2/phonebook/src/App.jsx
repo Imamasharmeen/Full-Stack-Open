@@ -1,45 +1,57 @@
-import { useState } from 'react'
-import Filter from './components/Filter.jsx'
-import PersonForm from './components/PersonForm.jsx'
-import Persons from './components/Persons.jsx'
+import { useState, useEffect } from 'react';
+import Filter from './components/Filter.jsx';
+import PersonForm from './components/PersonForm.jsx';
+import Persons from './components/Persons.jsx';
+import axios from 'axios';
 
 const App = () => {
-  const [persons, setPersons] = useState([
-    { name: 'Arto Hellas', number: '040-123456', id: 1 },
-    { name: 'Ada Lovelace', number: '39-44-5323523', id: 2 },
-    { name: 'Dan Abramov', number: '12-43-234345', id: 3 },
-    { name: 'Mary Poppendieck', number: '39-23-6423122', id: 4 }
-  ])
-  const [newName, setNewName] = useState('')
-  const [newNumber, setNewNumber] = useState('')
-  const [search, setSearch] = useState('')
+  const [persons, setPersons] = useState([]);
+  const [newName, setNewName] = useState('');
+  const [newNumber, setNewNumber] = useState('');
+  const [search, setSearch] = useState('');
 
-  const handleNameChange = (event) => setNewName(event.target.value)
-  const handleNumberChange = (event) => setNewNumber(event.target.value)
-  const handleSearchChange = (event) => setSearch(event.target.value)
+  // Fetch initial data from the backend
+  useEffect(() => {
+    axios.get('http://localhost:3002/persons')
+      .then(response => {
+        setPersons(response.data);
+      })
+      .catch(error => {
+        console.error('Error fetching data:', error);
+      });
+  }, []);
+
+  const handleNameChange = (event) => setNewName(event.target.value);
+  const handleNumberChange = (event) => setNewNumber(event.target.value);
+  const handleSearchChange = (event) => setSearch(event.target.value);
 
   const addName = (event) => {
-    event.preventDefault()
-    const exists = persons.some(person => person.name === newName)
+    event.preventDefault();
+    const exists = persons.some(person => person.name === newName);
     if (exists) {
-      alert(`${newName} is already added to phonebook`)
-      return
+      alert(`${newName} is already added to phonebook`);
+      return;
     }
 
     const newPerson = {
       name: newName,
       number: newNumber,
-      id: persons.length + 1
-    }
+    };
 
-    setPersons([...persons, newPerson])
-    setNewName('')
-    setNewNumber('')
-  }
+    axios.post('http://localhost:3002/persons', newPerson)
+      .then(response => {
+        setPersons([...persons, response.data]); 
+        setNewName('');
+        setNewNumber('');
+      })
+      .catch(error => {
+        console.error('Error adding person:', error);
+      });
+  };
 
   const filteredPersons = persons.filter(person =>
     person.name.toLowerCase().includes(search.toLowerCase())
-  )
+  );
 
   return (
     <div>
@@ -58,7 +70,7 @@ const App = () => {
       <h3>Numbers</h3>
       <Persons persons={filteredPersons} />
     </div>
-  )
-}
+  );
+};
 
-export default App
+export default App;
