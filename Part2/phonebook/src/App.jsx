@@ -10,13 +10,11 @@ const App = () => {
   const [newNumber, setNewNumber] = useState('');
   const [search, setSearch] = useState('');
 
-  // Fetch initial data from the backend
   useEffect(() => {
-    apiService.getAll()
-      // axios.get('http://localhost:3002/persons')
+    apiService
+      .getAll()
       .then(initialPersons => {
         setPersons(initialPersons);
-        
       })
       .catch(error => {
         console.error('Error fetching data:', error);
@@ -29,20 +27,42 @@ const App = () => {
 
   const addName = (event) => {
     event.preventDefault();
-    const exists = persons.some(person => person.name === newName);
-    if (exists) {
-      alert(`${newName} is already added to phonebook`);
-      return;
-    }
 
     const newPerson = {
       name: newName,
       number: newNumber,
     };
 
-    apiService.create(newPerson)
-      .then(returnedPerson  => {
-        setPersons([...persons, returnedPerson ]); 
+    const existingPerson = persons.find(person => person.name === newName);
+
+    if (existingPerson) {
+      const confirmUpdate = window.confirm(
+        `${newName} is already added to phonebook, replace the old number with a new one?`
+      );
+      if (confirmUpdate) {
+        const updatedPerson = { ...existingPerson, number: newNumber };
+
+        apiService
+          .update(existingPerson.id, updatedPerson)
+          .then(returnedPerson => {
+            setPersons(persons.map(person =>
+              person.id !== existingPerson.id ? person : returnedPerson
+            ));
+            setNewName('');
+            setNewNumber('');
+          })
+          .catch(error => {
+            alert(`Information of ${newName} has already been removed from server`);
+            setPersons(persons.filter(p => p.id !== existingPerson.id));
+          });
+      }
+      return;
+    }
+
+    apiService
+      .create(newPerson)
+      .then(returnedPerson => {
+        setPersons([...persons, returnedPerson]);
         setNewName('');
         setNewNumber('');
       })
@@ -51,21 +71,21 @@ const App = () => {
       });
   };
 
-    const handleDelete = (id, name) => {
+  const handleDelete = (id, name) => {
     if (window.confirm(`Delete ${name}?`)) {
-      apiService.remove(id)
+      apiService
+        .remove(id)
         .then(() => {
           setPersons(persons.filter(person => person.id !== id));
         })
         .catch(error => {
-          console.error('Error deleting person:', error);
           alert(`Information of ${name} has already been removed from server`);
           setPersons(persons.filter(person => person.id !== id));
         });
     }
   };
 
-  const filteredPersons = persons?.filter(person =>
+  const filteredPersons = persons.filter(person =>
     person.name.toLowerCase().includes(search.toLowerCase())
   );
 
@@ -84,7 +104,7 @@ const App = () => {
       />
 
       <h3>Numbers</h3>
-      <Persons persons={filteredPersons} handleDelete={handleDelete}/>
+      <Persons persons={filteredPersons} handleDelete={handleDelete} />
     </div>
   );
 };
