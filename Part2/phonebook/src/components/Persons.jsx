@@ -1,4 +1,4 @@
-const Persons = ({ persons, handleDelete, handleUpdate }) => (
+const Persons = ({ persons, handleDelete }) => (
   <ul>
     {persons?.map(person => (
       <p key={person.id}>
