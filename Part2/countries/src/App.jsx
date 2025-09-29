@@ -6,7 +6,12 @@ const App = () => {
   const [countries, setCountries] = useState([]);
   const [filtered, setFiltered] = useState([]);
   const [selected, setSelected] = useState(null); 
+  const [weather, setWeather] = useState(null);   
+  const [loadingWeather, setLoadingWeather] = useState(false); // ⏳ Weather loading state
 
+  const apiKey = import.meta.env.VITE_WEATHER_KEY;
+
+  // Load all countries once
   useEffect(() => {
     axios
       .get('https://studies.cs.helsinki.fi/restcountries/api/all')
@@ -15,6 +20,7 @@ const App = () => {
       });
   }, []);
 
+  // Filter countries when query changes
   useEffect(() => {
     if (query.trim() === '') {
       setFiltered([]);
@@ -27,8 +33,29 @@ const App = () => {
     );
 
     setFiltered(results);
-    setSelected(null); 
+    setSelected(null);
   }, [query, countries]);
+
+  // Fetch weather when a country is selected
+  useEffect(() => {
+    if (selected) {
+      const capital = selected.capital[0];
+      const url = `https://api.openweathermap.org/data/2.5/weather?q=${capital}&appid=${apiKey}&units=metric`;//???????????
+
+      setLoadingWeather(true);
+      axios.get(url)
+        .then(response => {
+          setWeather(response.data);
+          setLoadingWeather(false);
+        })
+        .catch(() => {
+          setWeather(null);
+          setLoadingWeather(false);
+        });
+    } else {
+      setWeather(null);
+    }
+  }, [selected, apiKey]);
 
   const handleChange = (e) => {
     setQuery(e.target.value);
@@ -57,13 +84,25 @@ const App = () => {
           alt={`Flag of ${country.name.common}`}
           width="200"
         />
+
+        <h2>Weather in {country.capital[0]}</h2>
+        {loadingWeather && <p>Loading weather...</p>}
+        {!loadingWeather && weather && (
+          <div>
+            <p>Temperature: {weather.main.temp} °C</p>
+            <img
+              src={`https://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`}
+              alt={weather.weather[0].description}
+            />
+            <p>Wind: {weather.wind.speed} m/s</p>
+          </div>
+        )}
       </div>
     );
   };
 
   const renderResults = () => {
     if (selected) {
-      
       return renderCountryDetails(selected);
     } else if (filtered.length > 10) {
       return <p>Too many matches, specify another filter</p>;
