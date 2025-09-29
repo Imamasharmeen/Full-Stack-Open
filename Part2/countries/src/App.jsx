@@ -5,6 +5,7 @@ const App = () => {
   const [query, setQuery] = useState('');
   const [countries, setCountries] = useState([]);
   const [filtered, setFiltered] = useState([]);
+  const [selected, setSelected] = useState(null); 
 
   useEffect(() => {
     axios
@@ -17,6 +18,7 @@ const App = () => {
   useEffect(() => {
     if (query.trim() === '') {
       setFiltered([]);
+      setSelected(null);
       return;
     }
 
@@ -25,48 +27,59 @@ const App = () => {
     );
 
     setFiltered(results);
+    setSelected(null); 
   }, [query, countries]);
 
   const handleChange = (e) => {
     setQuery(e.target.value);
   };
 
+  const handleShow = (country) => {
+    setSelected(country);
+  };
+
+  const renderCountryDetails = (country) => {
+    return (
+      <div>
+        <h1>{country.name.common}</h1>
+        <p>Capital {country.capital}</p>
+        <p>Area {country.area} km²</p>
+
+        <h2>Languages</h2>
+        <ul>
+          {Object.values(country.languages).map((lang, idx) => (
+            <li key={idx}>{lang}</li>
+          ))}
+        </ul>
+
+        <img
+          src={country.flags.png}
+          alt={`Flag of ${country.name.common}`}
+          width="200"
+        />
+      </div>
+    );
+  };
+
   const renderResults = () => {
-    if (filtered.length > 10) {
+    if (selected) {
+      
+      return renderCountryDetails(selected);
+    } else if (filtered.length > 10) {
       return <p>Too many matches, specify another filter</p>;
     } else if (filtered.length > 1) {
       return (
         <ul>
           {filtered.map(country => (
-            <li key={country.cca3}>{country.name.common}</li>
+            <li key={country.cca3}>
+              {country.name.common}{' '}
+              <button onClick={() => handleShow(country)}>show</button>
+            </li>
           ))}
         </ul>
       );
     } else if (filtered.length === 1) {
-      const country = filtered[0];
-
-
-      
-      return (
-        <div>
-          <h1>{country.name.common}</h1>
-          <p>Capital {country.capital}</p>
-          <p>Area {country.area} km²</p>
-
-          <h2>Languages</h2>
-          <ul>
-            {Object.values(country.languages).map((lang, idx) => (
-              <li key={idx}>{lang}</li>
-            ))}
-          </ul>
-
-          <img
-            src={country.flags.png}
-            alt={`Flag of ${country.name.common}`}
-            width="200"
-          />
-        </div>
-      );
+      return renderCountryDetails(filtered[0]);
     } else {
       return <p>No matches found</p>;
     }
@@ -74,8 +87,10 @@ const App = () => {
 
   return (
     <div>
-      <p>find countries <input value={query} onChange={handleChange}  /> </p>
-      
+      <p>
+        find countries <input value={query} onChange={handleChange} />
+      </p>
+
       {renderResults()}
     </div>
   );
