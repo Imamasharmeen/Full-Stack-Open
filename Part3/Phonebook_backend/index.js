@@ -28,7 +28,7 @@ app.get('/api/persons', (req, res) => {
 })
 
 app.get('/info', (req, res) => {
-    res.send(`<p>Phonebook has info for ${persons.length} people</p><p>${new Date()}</p>`);
+    res.send(`Phonebook has info for ${persons.length} people. ${new Date()}`);
 })
 
 // ✅ single person by id
@@ -41,6 +41,13 @@ app.get('/api/persons/:id', (req, res) => {
   } else {
     res.status(404).send({ error: 'Person not found' })
   }
+})
+
+// ✅ Delete person by id
+app.delete('/api/persons/:id', (req, res) => {
+  const id = Number(req.params.id);
+  let persons = persons.filter(p => p.id !== id);
+  res.sendStatus(persons);
 })
  
 app.listen(3001, () => {
