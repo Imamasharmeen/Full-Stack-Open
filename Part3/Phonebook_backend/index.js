@@ -1,7 +1,12 @@
 const express = require('express')
 const app = express()
+const morgan = require('morgan')
+
 
 app.use(express.json()) 
+app.use(morgan('tiny'))
+
+
 
 let persons = [
   { id: "1", name: "Arto Hellas", number: "040-123456" },
@@ -17,7 +22,7 @@ app.get('/api/persons', (req, res) => {
 
 // ✅ info page
 app.get('/info', (req, res) => {
-  res.send(`<p>Phonebook has info for ${persons.length} people</p><p>${new Date()}</p>`)
+  res.send(`Phonebook has info for ${persons.length} people. ${new Date()}</p>`)
 })
 
 // ✅ single person by id
