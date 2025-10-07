@@ -4,9 +4,13 @@ const morgan = require('morgan')
 
 
 app.use(express.json()) 
-app.use(morgan('tiny'))
 
 
+// ✅ Custom token for logging POST data
+morgan.token('body', (req) => JSON.stringify(req.body))
+
+// ✅ Morgan middleware (custom format)
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
 
 let persons = [
   { id: "1", name: "Arto Hellas", number: "040-123456" },
