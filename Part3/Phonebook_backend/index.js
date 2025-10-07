@@ -1,5 +1,7 @@
 const express = require('express');
 const app = express();
+app.use(express.json())
+
 
 let persons = [
     { 
@@ -43,11 +45,32 @@ app.get('/api/persons/:id', (req, res) => {
   }
 })
 
+// ✅ POST — add a new person
+app.post('/api/persons', (req, res) => {
+  const body = req.body
+
+  // ❌ Missing data check
+  if (!body.name || !body.number) {
+    return res.status(400).json({ error: 'Name or number missing' })
+  }
+
+  // 🆔 Generate random unique ID
+  const newPerson = {
+    id: Math.floor(Math.random() * 1000000).toString(),
+    name: body.name,
+    number: body.number
+  }
+
+  persons = persons.concat(newPerson)
+
+  res.send(newPerson)
+})
+
 // ✅ Delete person by id
 app.delete('/api/persons/:id', (req, res) => {
-  const id = Number(req.params.id);
-  let persons = persons.filter(p => p.id !== id);
-  res.sendStatus(persons);
+  const id = req.params.id
+  persons = persons.filter(p => p.id !== id)
+  res.status(204).end()
 })
  
 app.listen(3001, () => {
