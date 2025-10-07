@@ -30,6 +30,18 @@ app.get('/api/persons', (req, res) => {
 app.get('/info', (req, res) => {
     res.send(`<p>Phonebook has info for ${persons.length} people</p><p>${new Date()}</p>`);
 })
+
+// ✅ single person by id
+app.get('/api/persons/:id', (req, res) => {
+  const id = req.params.id
+  const person = persons.find(p => p.id === id)
+
+  if (person) {
+    res.send(person)
+  } else {
+    res.status(404).send({ error: 'Person not found' })
+  }
+})
  
 app.listen(3001, () => {
     console.log('Server running on port 3001');
