@@ -29,6 +29,8 @@ app.use(
   })
 );
 
+
+// Info route
 app.get("/info", (request, response) => {
   Person.estimatedDocumentCount()
     .then((count) => {
@@ -47,12 +49,15 @@ app.get("/info", (request, response) => {
     });
 });
 
+//get all persons
 app.get("/api/persons", (request, response) => {
   Person.find({}).then((persons) => {
     response.json(persons);
   });
 });
 
+
+//get person by id
 app.get("/api/persons/:id", (request, response, next) => {
   Person.findById(request.params.id)
     .then((person) => {
@@ -65,6 +70,8 @@ app.get("/api/persons/:id", (request, response, next) => {
     .catch((error) => next(error));
 });
 
+
+//delete person by id
 app.delete("/api/persons/:id", (request, response, next) => {
   Person.findByIdAndDelete(request.params.id)
     .then((deletedPerson) => {
@@ -77,6 +84,7 @@ app.delete("/api/persons/:id", (request, response, next) => {
     .catch((error) => next(error));
 });
 
+//create a new person
 app.post("/api/persons", (request, response) => {
   const body = request.body;
 
@@ -94,6 +102,7 @@ app.post("/api/persons", (request, response) => {
   });
 });
 
+//update a person
 app.put("/api/persons/:id", (request, response, next) => {
   Person.findByIdAndUpdate(request.params.id, request.body, { new: true })
     .then((updatedObject) => {
@@ -106,6 +115,7 @@ app.put("/api/persons/:id", (request, response, next) => {
     .catch((error) => next(error));
 });
 
+//unknown endpoint middleware
 const unkownEndpoint = (request, response) => {
   response.status(404).send({ error: "unknown endpoint" });
 };
@@ -122,6 +132,7 @@ const errorHandler = (error, request, response, next) => {
   next(error);
 };
 
+//error handling middleware
 app.use(errorHandler);
 
 const PORT = process.env.PORT;
