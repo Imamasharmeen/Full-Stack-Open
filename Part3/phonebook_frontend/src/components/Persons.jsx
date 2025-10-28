@@ -1,14 +1,20 @@
-const Persons = ({ persons, handleDelete }) => {
+const Persons = ({ filteredPersons, removePerson }) => {
   return (
-    <ul>
-      {persons.map(p =>
-        <li key={p.id}>
-          {p.name} {p.number}
-          <button onClick={() => handleDelete(p.id, p.name)}>delete</button>
-        </li>
-      )}
-    </ul>
-  )
-}
+    <div>
+      {filteredPersons.map((person) => (
+        <p key={person.id}>
+          {person.name} {person.number}{' '}
+          <button
+            onClick={() => {
+              removePerson(person);
+            }}
+          >
+            delete
+          </button>
+        </p>
+      ))}
+    </div>
+  );
+};
 
-export default Persons
+export default Persons;

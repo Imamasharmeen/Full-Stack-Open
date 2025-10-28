@@ -1,9 +1,9 @@
-const Filter = ({ filterValue, handleFilterChange }) => {
+const Filter = ({ filter, handleFilterChange }) => {
   return (
     <div>
-      filter shown with <input value={filterValue} onChange={handleFilterChange} />
+      filter: <input value={filter} onChange={handleFilterChange} />
     </div>
-  )
-}
+  );
+};
 
-export default Filter
+export default Filter;
