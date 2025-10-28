@@ -4,6 +4,7 @@ const app = express();
 const morgan = require("morgan");
 const Person = require("./models/person");
 
+// Custom token to log request body for POST requests
 morgan.token("body", (req, res) => {
   if (req.method === "POST") {
     return JSON.stringify(req.body);
@@ -30,7 +31,7 @@ app.use(
 );
 
 
-// Info route
+//get info route
 app.get("/info", (request, response) => {
   Person.estimatedDocumentCount()
     .then((count) => {
@@ -48,6 +49,7 @@ app.get("/info", (request, response) => {
       response.status(500).send({ error: "Something went wrong" });
     });
 });
+
 
 //get all persons
 app.get("/api/persons", (request, response) => {
@@ -84,27 +86,35 @@ app.delete("/api/persons/:id", (request, response, next) => {
     .catch((error) => next(error));
 });
 
+
 //create a new person
-app.post("/api/persons", (request, response) => {
+app.post("/api/persons", (request, response, next) => {
   const body = request.body;
 
-  if (!body.name || !body.number) {
-    return response.status(400).json({ error: "name or number missing" });
-  }
+  // if (!body.name || !body.number) {
+  //   return response.status(400).json({ error: "name or number missing" });
+  // }
 
   const person = new Person({
     name: body.name,
     number: body.number,
   });
 
-  person.save().then((savedPerson) => {
-    response.json(savedPerson);
-  });
+  person
+    .save()
+    .then((savedPerson) => {
+      response.json(savedPerson);
+    })
+    .catch((error) => next(error));
 });
+
 
 //update a person
 app.put("/api/persons/:id", (request, response, next) => {
-  Person.findByIdAndUpdate(request.params.id, request.body, { new: true })
+  Person.findByIdAndUpdate(request.params.id, request.body, {
+    new: true,
+    runValidators: true,
+  })
     .then((updatedObject) => {
       if (updatedObject) {
         response.json(updatedObject);
@@ -115,7 +125,6 @@ app.put("/api/persons/:id", (request, response, next) => {
     .catch((error) => next(error));
 });
 
-//unknown endpoint middleware
 const unkownEndpoint = (request, response) => {
   response.status(404).send({ error: "unknown endpoint" });
 };
@@ -127,12 +136,12 @@ const errorHandler = (error, request, response, next) => {
 
   if (error.name === "CastError") {
     return response.status(400).send({ error: "malformatted id" });
+  } else if (error.name === "ValidationError") {
+    return response.status(400).send({ error: error.message });
   }
-
   next(error);
 };
 
-//error handling middleware
 app.use(errorHandler);
 
 const PORT = process.env.PORT;
