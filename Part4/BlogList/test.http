@@ -1,0 +1,10 @@
+POST http://localhost:3003/api/blogs
+Content-Type: application/json
+
+{
+  "title": "Node.js Tutorial",
+  "author": "John Doe",
+  "url": "https://example.com/node",
+  "likes": 10
+}
+###GET http://localhost:3003/api/blogs
