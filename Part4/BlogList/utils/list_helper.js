@@ -1,3 +1,5 @@
+const _ = require("lodash");
+
 const dummy = (blogs) => {
   return 1;
 };
@@ -19,7 +21,6 @@ const favouriteBlog = (blogs) => {
     return null;
   }
 
-  // in case multiple blogs have same highest likes, first one will be returned
   const favourite = blogs.reduce((prev, current) => {
     return current.likes > prev.likes ? current : prev;
   });
@@ -27,9 +28,27 @@ const favouriteBlog = (blogs) => {
   return favourite;
 };
 
-// Exporting the functions to be used in other modules
+const mostBlogs = (blogs) => {
+  if (blogs.length === 0) {
+    return null;
+  }
+
+  const authorBlogCounts = _.countBy(blogs, "author");
+
+  const topAuthor = _.maxBy(
+    Object.keys(authorBlogCounts),
+    (author) => authorBlogCounts[author]
+  );
+
+  return {
+    author: topAuthor,
+    blogs: authorBlogCounts[topAuthor],
+  };
+};
+
 module.exports = {
   dummy,
   totalLikes,
   favouriteBlog,
+  mostBlogs,
 };
