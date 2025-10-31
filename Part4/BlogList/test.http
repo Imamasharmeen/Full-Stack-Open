@@ -2,9 +2,45 @@ POST http://localhost:3003/api/blogs
 Content-Type: application/json
 
 {
-  "title": "Node.js Tutorial",
+  "title": "React Patterns",
+  "author": "Michael Chan",
+  "url": "https://reactpatterns.com/",
+  "likes": 7
+}
+
+###
+
+POST http://localhost:3003/api/blogs
+Content-Type: application/json
+
+{
+  "title": "Go To Statement Considered Harmful",
+  "author": "Edsger W. Dijkstra",
+  "url": "http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html",
+  "likes": 5
+}
+
+###
+
+GET http://localhost:3003/api/blogs
+
+###
+
+GET http://localhost:3003/api/blogs/
+
+
+###
+
+PUT http://localhost:3003/api/blogs/69043a745f3c89ebb713c9af
+Content-Type: application/json
+
+{
+  "title": "Tutorial",
   "author": "John Doe",
   "url": "https://example.com/node",
-  "likes": 10
+  "likes": 25
 }
-###GET http://localhost:3003/api/blogs
+
+###
+
+DELETE http://localhost:3003/api/blogs/69043a745f3c89ebb713c9af
