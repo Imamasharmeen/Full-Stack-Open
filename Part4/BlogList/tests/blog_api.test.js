@@ -2,12 +2,11 @@ const { test, beforeEach, after } = require('node:test')
 const assert = require('node:assert')
 const mongoose = require('mongoose')
 const supertest = require('supertest')
-const app = require('../app') // new line added — import Express app
-const Blog = require('../models/blog') // new line added — import Blog model
+const app = require('../app')
+const Blog = require('../models/blog')
 
-const api = supertest(app) // new line added — wrap app with SuperTest
+const api = supertest(app)
 
-// 🆕 new line added — sample initial blogs
 const initialBlogs = [
   {
     title: 'First Blog',
@@ -23,24 +22,39 @@ const initialBlogs = [
   }
 ]
 
-// 🆕 new line added — reset DB before each test
 beforeEach(async () => {
   await Blog.deleteMany({})
-
-  // insert initial blogs
   await Blog.insertMany(initialBlogs)
 })
 
-// 🆕 new line added — test GET /api/blogs
 test('blogs are returned as json and correct amount', async () => {
   const response = await api
     .get('/api/blogs')
     .expect(200)
     .expect('Content-Type', /application\/json/)
 
-  assert.strictEqual(response.body.length, initialBlogs.length) // check correct count
+  assert.strictEqual(response.body.length, initialBlogs.length)
+})
+
+// 🆕 নতুন test
+test('blog posts have id property, not _id', async () => {
+  const response = await api
+    .get('/api/blogs')
+    .expect(200)
+    .expect('Content-Type', /application\/json/)
+
+  const blogs = response.body
+
+  // check that at least one blog exists
+  assert.strictEqual(blogs.length > 0, true)
+
+  // check each blog has 'id' and not '_id'
+  blogs.forEach(blog => {
+    assert.strictEqual(blog.id !== undefined, true) // id আছে কিনা
+    assert.strictEqual(blog._id === undefined, true) // _id নেই কিনা
+  })
 })
 
 after(async () => {
-  await mongoose.connection.close() // 🆕 new line added — close DB connection
+  await mongoose.connection.close()
 })
