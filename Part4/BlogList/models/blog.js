@@ -4,7 +4,10 @@ const blogSchema = new mongoose.Schema({
   title: String,
   author: String,
   url: String,
-  likes: Number
+  likes: {
+    type: Number,
+    default: 0 // set default value to 0 if likes is missing
+  }
 })
 
 // transform _id to id when converting to JSON

@@ -52,7 +52,6 @@ test('blog posts have id property, not _id', async () => {
   })
 })
 
-// 🆕 নতুন test
 test('a valid blog can be added', async () => {
   const newBlog = {
     title: 'Async/Await is awesome',
@@ -74,6 +73,25 @@ test('a valid blog can be added', async () => {
   // verify content saved correctly
   const contents = response.body.map(blog => blog.title)
   assert(contents.includes('Async/Await is awesome'))
+})
+
+// test for default likes value
+test('if likes property is missing, it defaults to 0', async () => {
+  const newBlog = {
+    title: 'Blog without likes',
+    author: 'Test Author',
+    url: 'http://example.com/no-likes'
+    // likes property is intentionally missing
+  }
+
+  const response = await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(201)
+    .expect('Content-Type', /application\/json/)
+
+  // verify that likes defaults to 0
+  assert.strictEqual(response.body.likes, 0)
 })
 
 after(async () => {
