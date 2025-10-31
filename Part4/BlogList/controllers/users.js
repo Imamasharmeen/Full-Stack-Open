@@ -16,10 +16,31 @@ usersRouter.post('/', async (request, response, next) => {
   try {
     const { username, name, password } = request.body
 
-    // validate password exists and has minimum length
-    if (!password || password.length < 3) {
+    // validate username is provided
+    if (!username) {
       return response.status(400).json({
-        error: 'password is required and must be at least 3 characters long'
+        error: 'username is required'
+      })
+    }
+
+    // validate username length
+    if (username.length < 3) {
+      return response.status(400).json({
+        error: 'username must be at least 3 characters long'
+      })
+    }
+
+    // validate password is provided
+    if (!password) {
+      return response.status(400).json({
+        error: 'password is required'
+      })
+    }
+
+    // validate password length
+    if (password.length < 3) {
+      return response.status(400).json({
+        error: 'password must be at least 3 characters long'
       })
     }
 

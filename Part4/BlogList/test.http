@@ -1,4 +1,4 @@
-### Create a new user
+### Create a valid user
 POST http://localhost:3003/api/users
 Content-Type: application/json
 
@@ -10,14 +10,49 @@ Content-Type: application/json
 
 ###
 
-### Create another user
+### Create user with short username (should fail)
 POST http://localhost:3003/api/users
 Content-Type: application/json
 
 {
-  "username": "mluukkai",
-  "name": "Matti Luukkainen",
-  "password": "salainen"
+  "username": "ab",
+  "name": "Test User",
+  "password": "testpassword"
+}
+
+###
+
+### Create user with short password (should fail)
+POST http://localhost:3003/api/users
+Content-Type: application/json
+
+{
+  "username": "testuser2",
+  "name": "Test User 2",
+  "password": "ab"
+}
+
+###
+
+### Create user without username (should fail)
+POST http://localhost:3003/api/users
+Content-Type: application/json
+
+{
+  "name": "Test User",
+  "password": "testpassword"
+}
+
+###
+
+### Create user without password (should fail)
+POST http://localhost:3003/api/users
+Content-Type: application/json
+
+{
+  "username": "testuser3",
+  "name": "Test User 3",
+  "password": "testpassword"
 }
 
 ###
@@ -26,30 +61,8 @@ Content-Type: application/json
 GET http://localhost:3003/api/users
 
 ###
-POST http://localhost:3003/api/blogs
-Content-Type: application/json
 
-{
-  "title": "React Patterns",
-  "author": "Michael Chan",
-  "url": "https://reactpatterns.com/",
-  "likes": 7
-}
-
-###
-
-POST http://localhost:3003/api/blogs
-Content-Type: application/json
-
-{
-  "title": "Go To Statement Considered Harmful",
-  "author": "Edsger W. Dijkstra",
-  "url": "http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html",
-  "likes": 5
-}
-
-###
-
+### Get all blogs
 GET http://localhost:3003/api/blogs
 
 ###
