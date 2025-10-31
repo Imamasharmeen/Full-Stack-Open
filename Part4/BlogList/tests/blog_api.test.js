@@ -36,7 +36,6 @@ test('blogs are returned as json and correct amount', async () => {
   assert.strictEqual(response.body.length, initialBlogs.length)
 })
 
-// 🆕 নতুন test
 test('blog posts have id property, not _id', async () => {
   const response = await api
     .get('/api/blogs')
@@ -45,14 +44,36 @@ test('blog posts have id property, not _id', async () => {
 
   const blogs = response.body
 
-  // check that at least one blog exists
   assert.strictEqual(blogs.length > 0, true)
 
-  // check each blog has 'id' and not '_id'
   blogs.forEach(blog => {
-    assert.strictEqual(blog.id !== undefined, true) // id আছে কিনা
-    assert.strictEqual(blog._id === undefined, true) // _id নেই কিনা
+    assert.strictEqual(blog.id !== undefined, true)
+    assert.strictEqual(blog._id === undefined, true)
   })
+})
+
+// 🆕 নতুন test
+test('a valid blog can be added', async () => {
+  const newBlog = {
+    title: 'Async/Await is awesome',
+    author: 'Test Author',
+    url: 'http://example.com/new',
+    likes: 15
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(201)
+    .expect('Content-Type', /application\/json/)
+
+  // verify total number increased by 1
+  const response = await api.get('/api/blogs')
+  assert.strictEqual(response.body.length, initialBlogs.length + 1)
+
+  // verify content saved correctly
+  const contents = response.body.map(blog => blog.title)
+  assert(contents.includes('Async/Await is awesome'))
 })
 
 after(async () => {
