@@ -1,4 +1,4 @@
-### Create a valid user
+### Create a user first
 POST http://localhost:3003/api/users
 Content-Type: application/json
 
@@ -10,48 +10,34 @@ Content-Type: application/json
 
 ###
 
-### Create user with short username (should fail)
-POST http://localhost:3003/api/users
+### Login with correct credentials
+POST http://localhost:3003/api/login
 Content-Type: application/json
 
 {
-  "username": "ab",
-  "name": "Test User",
+  "username": "testuser",
   "password": "testpassword"
 }
 
 ###
 
-### Create user with short password (should fail)
-POST http://localhost:3003/api/users
+### Login with wrong password (should fail)
+POST http://localhost:3003/api/login
 Content-Type: application/json
 
 {
-  "username": "testuser2",
-  "name": "Test User 2",
-  "password": "ab"
+  "username": "testuser",
+  "password": "wrongpassword"
 }
 
 ###
 
-### Create user without username (should fail)
-POST http://localhost:3003/api/users
+### Login with non-existent user (should fail)
+POST http://localhost:3003/api/login
 Content-Type: application/json
 
 {
-  "name": "Test User",
-  "password": "testpassword"
-}
-
-###
-
-### Create user without password (should fail)
-POST http://localhost:3003/api/users
-Content-Type: application/json
-
-{
-  "username": "testuser3",
-  "name": "Test User 3",
+  "username": "nonexistent",
   "password": "testpassword"
 }
 
@@ -64,24 +50,3 @@ GET http://localhost:3003/api/users
 
 ### Get all blogs
 GET http://localhost:3003/api/blogs
-
-###
-
-GET http://localhost:3003/api/blogs/
-
-
-###
-
-PUT http://localhost:3003/api/blogs/69043a745f3c89ebb713c9af
-Content-Type: application/json
-
-{
-  "title": "Tutorial",
-  "author": "John Doe",
-  "url": "https://example.com/node",
-  "likes": 25
-}
-
-###
-
-DELETE http://localhost:3003/api/blogs/69043a745f3c89ebb713c9af
