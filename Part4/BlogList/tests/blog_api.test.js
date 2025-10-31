@@ -75,7 +75,6 @@ test('a valid blog can be added', async () => {
   assert(contents.includes('Async/Await is awesome'))
 })
 
-// test for default likes value
 test('if likes property is missing, it defaults to 0', async () => {
   const newBlog = {
     title: 'Blog without likes',
@@ -92,6 +91,62 @@ test('if likes property is missing, it defaults to 0', async () => {
 
   // verify that likes defaults to 0
   assert.strictEqual(response.body.likes, 0)
+})
+
+// test for missing title
+test('blog without title is not added and returns 400', async () => {
+  const newBlog = {
+    author: 'Test Author',
+    url: 'http://example.com/no-title',
+    likes: 5
+    // title is missing
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(400)
+
+  // verify that blog was not added
+  const response = await api.get('/api/blogs')
+  assert.strictEqual(response.body.length, initialBlogs.length)
+})
+
+// test for missing url
+test('blog without url is not added and returns 400', async () => {
+  const newBlog = {
+    title: 'Blog without URL',
+    author: 'Test Author',
+    likes: 5
+    // url is missing
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(400)
+
+  // verify that blog was not added
+  const response = await api.get('/api/blogs')
+  assert.strictEqual(response.body.length, initialBlogs.length)
+})
+
+// test for missing both title and url
+test('blog without title and url is not added and returns 400', async () => {
+  const newBlog = {
+    author: 'Test Author',
+    likes: 5
+    // both title and url are missing
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(400)
+
+  // verify that blog was not added
+  const response = await api.get('/api/blogs')
+  assert.strictEqual(response.body.length, initialBlogs.length)
 })
 
 after(async () => {
