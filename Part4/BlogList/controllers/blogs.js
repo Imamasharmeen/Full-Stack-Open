@@ -3,15 +3,6 @@ const Blog = require('../models/blog')
 const User = require('../models/user')
 const jwt = require('jsonwebtoken')
 
-// helper function to extract token from authorization header
-const getTokenFrom = request => {
-  const authorization = request.get('authorization')
-  if (authorization && authorization.startsWith('Bearer ')) {
-    return authorization.replace('Bearer ', '')
-  }
-  return null
-}
-
 // GET all blogs with user information populated
 blogsRouter.get('/', async (request, response) => {
   const blogs = await Blog
@@ -38,14 +29,13 @@ blogsRouter.get('/:id', async (request, response, next) => {
   }
 })
 
-// POST new blog - requires valid token
+// POST new blog - use request.token instead of getTokenFrom
 blogsRouter.post('/', async (request, response, next) => {
   try {
     const body = request.body
 
-    // extract and verify token
-    const token = getTokenFrom(request)
-    const decodedToken = jwt.verify(token, process.env.SECRET)
+    // use request.token from middleware instead of getTokenFrom helper
+    const decodedToken = jwt.verify(request.token, process.env.SECRET)
 
     // if token doesn't contain user id, return error
     if (!decodedToken.id) {
