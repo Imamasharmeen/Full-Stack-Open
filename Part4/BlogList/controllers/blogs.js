@@ -1,6 +1,16 @@
 const blogsRouter = require('express').Router()
 const Blog = require('../models/blog')
 const User = require('../models/user')
+const jwt = require('jsonwebtoken')
+
+// helper function to extract token from authorization header
+const getTokenFrom = request => {
+  const authorization = request.get('authorization')
+  if (authorization && authorization.startsWith('Bearer ')) {
+    return authorization.replace('Bearer ', '')
+  }
+  return null
+}
 
 // GET all blogs with user information populated
 blogsRouter.get('/', async (request, response) => {
@@ -28,20 +38,28 @@ blogsRouter.get('/:id', async (request, response, next) => {
   }
 })
 
-// POST new blog with user assignment
+// POST new blog - requires valid token
 blogsRouter.post('/', async (request, response, next) => {
   try {
     const body = request.body
 
-    // find the first user in database to assign as creator
-    const user = await User.findOne({})
+    // extract and verify token
+    const token = getTokenFrom(request)
+    const decodedToken = jwt.verify(token, process.env.SECRET)
 
-    if (!user) {
-      return response.status(400).json({ 
-        error: 'no users found in database, create a user first' 
-      })
+    // if token doesn't contain user id, return error
+    if (!decodedToken.id) {
+      return response.status(401).json({ error: 'token invalid' })
     }
 
+    // find user from database using id from token
+    const user = await User.findById(decodedToken.id)
+
+    if (!user) {
+      return response.status(401).json({ error: 'user not found' })
+    }
+
+    // create blog with user from token
     const blog = new Blog({
       title: body.title,
       author: body.author,
