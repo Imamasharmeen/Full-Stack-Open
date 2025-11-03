@@ -10,7 +10,6 @@ const loginRouter = require('./controllers/login')
 const app = express()
 
 console.log('Server PORT:', config.PORT)
-
 logger.info('connecting to', config.MONGODB_URI)
 
 mongoose.connect(config.MONGODB_URI)
@@ -21,6 +20,7 @@ app.use(express.json())
 app.use(middleware.requestLogger)
 app.use(middleware.tokenExtractor)
 
+// 🆕 Apply userExtractor only to /api/blogs
 app.use('/api/blogs', blogsRouter)
 app.use('/api/users', usersRouter)
 app.use('/api/login', loginRouter)
