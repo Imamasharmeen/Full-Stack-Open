@@ -11,7 +11,6 @@ const App = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [notification, setNotification] = useState({ message: null, type: '' })
-
   const blogFormRef = useRef()
 
   useEffect(() => {
@@ -57,8 +56,7 @@ const App = () => {
         type: 'success'
       })
       setTimeout(() => setNotification({ message: null, type: '' }), 4000)
-
-      blogFormRef.current.toggleVisibility() // 🧠 hide form after submit
+      blogFormRef.current.toggleVisibility()
     } catch (error) {
       setNotification({ message: 'Error creating blog', type: 'error' })
       setTimeout(() => setNotification({ message: null, type: '' }), 4000)
@@ -75,7 +73,7 @@ const App = () => {
           <div>
             username
             <input
-              type='text'
+              type="text"
               value={username}
               onChange={({ target }) => setUsername(target.value)}
             />
@@ -83,12 +81,12 @@ const App = () => {
           <div>
             password
             <input
-              type='password'
+              type="password"
               value={password}
               onChange={({ target }) => setPassword(target.value)}
             />
           </div>
-          <button type='submit'>login</button>
+          <button type="submit">login</button>
         </form>
       </div>
     )
@@ -101,10 +99,10 @@ const App = () => {
 
       <p>
         {user.name} logged in
-        <button onClick={handleLogout} style={{ marginLeft: '10px' }}>logout</button>
+        <button onClick={handleLogout}>logout</button>
       </p>
 
-      <Togglable buttonLabel='create new blog' ref={blogFormRef}>
+      <Togglable buttonLabel="create new blog" ref={blogFormRef}>
         <BlogForm createBlog={addBlog} />
       </Togglable>
 
