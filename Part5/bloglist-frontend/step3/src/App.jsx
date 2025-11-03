@@ -46,13 +46,13 @@ const App = () => {
     }
   }
 
-  // লগআউট
+  
   const handleLogout = () => {
     window.localStorage.removeItem('loggedBlogUser')
     setUser(null)
   }
 
-  // নতুন ব্লগ তৈরি করা
+  
   const addBlog = async (event) => {
     event.preventDefault()
     try {
@@ -63,7 +63,7 @@ const App = () => {
       }
 
       const createdBlog = await blogService.create(newBlog)
-      setBlogs(blogs.concat(createdBlog)) // সাথে সাথে লিস্টে যোগ করা
+      setBlogs(blogs.concat(createdBlog)) 
 
       // ইনপুট ফিল্ড ক্লিয়ার
       setNewTitle('')
