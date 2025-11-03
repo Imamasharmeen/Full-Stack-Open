@@ -3,7 +3,7 @@ const Blog = require('../models/blog')
 const User = require('../models/user')
 const jwt = require('jsonwebtoken')
 
-// GET all blogs with user information populated
+// 🟢 GET all blogs (with user info)
 blogsRouter.get('/', async (request, response) => {
   const blogs = await Blog
     .find({})
@@ -12,7 +12,7 @@ blogsRouter.get('/', async (request, response) => {
   response.json(blogs)
 })
 
-// GET single blog with user information populated
+// 🟢 GET single blog
 blogsRouter.get('/:id', async (request, response, next) => {
   try {
     const blog = await Blog
@@ -29,27 +29,21 @@ blogsRouter.get('/:id', async (request, response, next) => {
   }
 })
 
-// POST new blog - use request.token instead of getTokenFrom
+// 🟢 POST new blog
 blogsRouter.post('/', async (request, response, next) => {
   try {
     const body = request.body
-
-    // use request.token from middleware instead of getTokenFrom helper
     const decodedToken = jwt.verify(request.token, process.env.SECRET)
 
-    // if token doesn't contain user id, return error
     if (!decodedToken.id) {
       return response.status(401).json({ error: 'token invalid' })
     }
 
-    // find user from database using id from token
     const user = await User.findById(decodedToken.id)
-
     if (!user) {
       return response.status(401).json({ error: 'user not found' })
     }
 
-    // create blog with user from token
     const blog = new Blog({
       title: body.title,
       author: body.author,
@@ -58,14 +52,10 @@ blogsRouter.post('/', async (request, response, next) => {
       user: user._id
     })
 
-    // save blog to database
     const savedBlog = await blog.save()
-
-    // add blog reference to user's blogs array
     user.blogs = user.blogs.concat(savedBlog._id)
     await user.save()
 
-    // populate user info before sending response
     const populatedBlog = await Blog
       .findById(savedBlog._id)
       .populate('user', { username: 1, name: 1 })
@@ -76,17 +66,42 @@ blogsRouter.post('/', async (request, response, next) => {
   }
 })
 
-// DELETE a blog
+// 🆕 DELETE blog — only creator can delete it
 blogsRouter.delete('/:id', async (request, response, next) => {
   try {
+    const decodedToken = jwt.verify(request.token, process.env.SECRET)
+
+    if (!decodedToken.id) {
+      return response.status(401).json({ error: 'token invalid' })
+    }
+
+    const blog = await Blog.findById(request.params.id)
+    if (!blog) {
+      return response.status(404).json({ error: 'blog not found' })
+    }
+
+    // 🆕 Only creator can delete
+    if (blog.user.toString() !== decodedToken.id.toString()) {
+      return response.status(403).json({ error: 'forbidden: not the creator' })
+    }
+
     await Blog.findByIdAndDelete(request.params.id)
     response.status(204).end()
+
   } catch (error) {
+    // 🆕 Handle invalid token
+    if (error.name === 'JsonWebTokenError') {
+      return response.status(401).json({ error: 'token invalid' })
+    }
+    // 🆕 Handle malformed ID
+    if (error.name === 'CastError') {
+      return response.status(400).json({ error: 'malformatted id' })
+    }
     next(error)
   }
 })
 
-// PUT update a blog
+// 🟢 PUT update blog
 blogsRouter.put('/:id', async (request, response, next) => {
   try {
     const body = request.body
@@ -99,8 +114,8 @@ blogsRouter.put('/:id', async (request, response, next) => {
     }
 
     const updatedBlog = await Blog.findByIdAndUpdate(
-      request.params.id, 
-      blog, 
+      request.params.id,
+      blog,
       { new: true, runValidators: true, context: 'query' }
     ).populate('user', { username: 1, name: 1 })
 
