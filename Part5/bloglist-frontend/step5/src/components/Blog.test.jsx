@@ -1,9 +1,9 @@
-// src/components/Blog.test.jsx
+// ✅ src/components/Blog.test.jsx
 import { render, screen } from '@testing-library/react'
-import Blog from './Blog'
 import userEvent from '@testing-library/user-event'
+import Blog from './Blog'
 
-// Mock user and handler props
+// Mock user and handlers
 const user = {
   username: 'testuser',
   name: 'Test User'
@@ -22,12 +22,24 @@ test('renders title and author but not url or likes by default', () => {
     <Blog blog={blog} updateBlog={() => {}} removeBlog={() => {}} user={user} />
   )
 
-  // ✅ Title and author should be visible
   const basicDiv = container.querySelector('.blog-basic')
   expect(basicDiv).toHaveTextContent('Testing React Components')
   expect(basicDiv).toHaveTextContent('Kent C. Dodds')
 
-  // ❌ URL and likes should NOT be visible initially
   const detailsDiv = container.querySelector('.blog-details')
   expect(detailsDiv).toBeNull()
+})
+
+test('shows url and likes when view button clicked', async () => {
+  const { container } = render(
+    <Blog blog={blog} updateBlog={() => {}} removeBlog={() => {}} user={user} />
+  )
+
+  const userSim = userEvent.setup() // simulate user actions
+  const button = screen.getByText('view') // find view button
+  await userSim.click(button) // simulate click
+
+  const detailsDiv = container.querySelector('.blog-details')
+  expect(detailsDiv).toHaveTextContent('https://testing-library.com/docs/')
+  expect(detailsDiv).toHaveTextContent('likes 5')
 })

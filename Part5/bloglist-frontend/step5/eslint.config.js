@@ -1,11 +1,11 @@
-// eslint.config.js
+// ✅ eslint.config.js
 import js from '@eslint/js'
 import globals from 'globals'
 import reactHooks from 'eslint-plugin-react-hooks'
 import reactRefresh from 'eslint-plugin-react-refresh'
 
 export default [
-  { ignores: ['dist'] },
+  { ignores: ['dist', 'coverage'] }, // ignore build/test folders
   {
     files: ['**/*.{js,jsx}'],
     languageOptions: {
@@ -38,6 +38,14 @@ export default [
       'object-curly-spacing': ['error', 'always'],
       'arrow-spacing': ['error', { before: true, after: true }],
       'no-console': 'off'
+    }
+  },
+  {
+    files: ['**/*.test.{js,jsx}'], // add vitest globals for tests
+    languageOptions: {
+      globals: {
+        ...globals.vitest
+      }
     }
   }
 ]
