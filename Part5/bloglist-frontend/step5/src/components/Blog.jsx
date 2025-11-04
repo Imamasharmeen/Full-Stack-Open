@@ -1,8 +1,9 @@
 // src/components/Blog.jsx
 import { useState } from 'react'
 import PropTypes from 'prop-types'
+import blogService from '../services/blogs'
 
-const Blog = ({ blog }) => {
+const Blog = ({ blog, updateBlog }) => {
   const [visible, setVisible] = useState(false)
 
   const blogStyle = {
@@ -11,6 +12,17 @@ const Blog = ({ blog }) => {
     border: 'solid',
     borderWidth: 1,
     marginBottom: 5,
+  }
+
+  const handleLike = async () => {
+    const updated = {
+      ...blog,
+      likes: blog.likes + 1,
+      user: blog.user.id || blog.user, // user must be ID, not full object
+    }
+
+    const returnedBlog = await blogService.update(blog.id, updated)
+    updateBlog(returnedBlog)
   }
 
   return (
@@ -26,7 +38,7 @@ const Blog = ({ blog }) => {
           <button onClick={() => setVisible(false)}>hide</button>
           <div>{blog.url}</div>
           <div>
-            likes {blog.likes} <button>like</button>
+            likes {blog.likes} <button onClick={handleLike}>like</button>
           </div>
           <div>{blog.user?.name}</div>
         </div>
@@ -37,6 +49,7 @@ const Blog = ({ blog }) => {
 
 Blog.propTypes = {
   blog: PropTypes.object.isRequired,
+  updateBlog: PropTypes.func.isRequired,
 }
 
 export default Blog

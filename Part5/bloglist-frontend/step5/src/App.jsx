@@ -64,6 +64,9 @@ const App = () => {
       console.error("Error creating blog:", error);
     }
   };
+  const updateBlog = (updatedBlog) => {
+setBlogs(blogs.map((b) => (b.id === updatedBlog.id ? updatedBlog : b)));
+  };
 
   if (user === null) {
     return (
@@ -108,7 +111,7 @@ const App = () => {
       </Togglable>
 
       {blogs.map((blog) => (
-        <Blog key={blog.id} blog={blog} />
+        <Blog key={blog.id} blog={blog} updateBlog={updateBlog}  />
       ))}
     </div>
   );
