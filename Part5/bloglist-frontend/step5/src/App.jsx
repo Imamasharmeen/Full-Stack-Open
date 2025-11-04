@@ -65,7 +65,10 @@ const App = () => {
     }
   };
   const updateBlog = (updatedBlog) => {
-setBlogs(blogs.map((b) => (b.id === updatedBlog.id ? updatedBlog : b)));
+    const updatedBlogs = blogs.map((b) =>
+      b.id === updatedBlog.id ? updatedBlog : b
+    );
+    setBlogs(updatedBlogs.sort((a, b) => b.likes - a.likes));
   };
 
   if (user === null) {
@@ -110,8 +113,10 @@ setBlogs(blogs.map((b) => (b.id === updatedBlog.id ? updatedBlog : b)));
         <BlogForm createBlog={addBlog} />
       </Togglable>
 
-      {blogs.map((blog) => (
-        <Blog key={blog.id} blog={blog} updateBlog={updateBlog}  />
+      {[...blogs]
+      .sort((a, b) => b.likes - a.likes)
+      .map(blog => (
+        <Blog key={blog.id} blog={blog} updateBlog={updateBlog} />
       ))}
     </div>
   );
