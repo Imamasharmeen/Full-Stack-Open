@@ -6,6 +6,7 @@ import blogService from '../services/blogs'
 const Blog = ({ blog, updateBlog, removeBlog, user }) => {
   const [visible, setVisible] = useState(false)
 
+  // Inline styles for visual separation
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
@@ -14,6 +15,10 @@ const Blog = ({ blog, updateBlog, removeBlog, user }) => {
     marginBottom: 5,
   }
 
+  // Toggle visibility of blog details
+  const toggleVisibility = () => setVisible(!visible)
+
+  // Handle likes
   const handleLike = async () => {
     const updated = {
       ...blog,
@@ -24,40 +29,35 @@ const Blog = ({ blog, updateBlog, removeBlog, user }) => {
     updateBlog(returnedBlog)
   }
 
+  // Handle blog removal
   const handleRemove = async () => {
-    const ok = window.confirm(
-      `Remove blog ${blog.title} by ${blog.author}?`
-    )
+    const ok = window.confirm(`Remove blog ${blog.title} by ${blog.author}?`)
     if (ok) {
       await blogService.remove(blog.id)
       removeBlog(blog.id)
     }
   }
 
-  // 🧩 show "remove" only if logged user added this blog
-  const showRemove =
-    user && blog.user && (blog.user.username === user.username)
+  // Show remove button only if current user created the blog
+  const showRemove = user && blog.user && (blog.user.username === user.username)
 
   return (
     <div style={blogStyle} className="blog">
-      {!visible ? (
-        <div>
-          {blog.title} {blog.author}{' '}
-          <button onClick={() => setVisible(true)}>view</button>
-        </div>
-      ) : (
-        <div>
-          {blog.title} {blog.author}{' '}
-          <button onClick={() => setVisible(false)}>hide</button>
-          <div>{blog.url}</div>
-          <div>
-            likes {blog.likes}{' '}
-            <button onClick={handleLike}>like</button>
+      {/* Blog title and author always visible */}
+      <div className="blog-basic">
+        {blog.title} {blog.author}
+        <button onClick={toggleVisibility}>{visible ? 'hide' : 'view'}</button>
+      </div>
+
+      {/* Blog details shown only when visible */}
+      {visible && (
+        <div className="blog-details">
+          <div className="blog-url">{blog.url}</div>
+          <div className="blog-likes">
+            likes {blog.likes} <button onClick={handleLike}>like</button>
           </div>
-          <div>{blog.user?.name}</div>
-          {showRemove && (
-            <button onClick={handleRemove}>remove</button>
-          )}
+          <div className="blog-user">{blog.user?.name}</div>
+          {showRemove && <button onClick={handleRemove}>remove</button>}
         </div>
       )}
     </div>
