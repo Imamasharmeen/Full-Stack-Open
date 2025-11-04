@@ -70,6 +70,9 @@ const App = () => {
     );
     setBlogs(updatedBlogs.sort((a, b) => b.likes - a.likes));
   };
+  const removeBlog = (id) => {
+  setBlogs(blogs.filter(b => b.id !== id))
+}
 
   if (user === null) {
     return (
@@ -116,7 +119,8 @@ const App = () => {
       {[...blogs]
       .sort((a, b) => b.likes - a.likes)
       .map(blog => (
-        <Blog key={blog.id} blog={blog} updateBlog={updateBlog} />
+        <Blog key={blog.id} blog={blog} updateBlog={updateBlog}  removeBlog={removeBlog}
+          user={user} />
       ))}
     </div>
   );
