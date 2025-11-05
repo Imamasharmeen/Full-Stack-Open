@@ -1,21 +1,15 @@
-// src/components/BlogForm.jsx
+// ✅ src/components/BlogForm.jsx
 import { useState } from 'react'
 import PropTypes from 'prop-types'
 
 const BlogForm = ({ createBlog }) => {
-  // 🧠 Local state (moved from App.jsx)
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
   const [url, setUrl] = useState('')
 
-  const addBlog = (event) => {
+  const handleSubmit = (event) => {
     event.preventDefault()
-    createBlog({
-      title,
-      author,
-      url,
-    })
-    // clear input fields after submit
+    createBlog({ title, author, url })
     setTitle('')
     setAuthor('')
     setUrl('')
@@ -24,13 +18,13 @@ const BlogForm = ({ createBlog }) => {
   return (
     <div>
       <h3>create new</h3>
-
-      <form onSubmit={addBlog}>
+      <form onSubmit={handleSubmit}>
         <div>
           title:
           <input
             type="text"
             value={title}
+            placeholder="write title here"  // ✅ added
             onChange={({ target }) => setTitle(target.value)}
           />
         </div>
@@ -39,6 +33,7 @@ const BlogForm = ({ createBlog }) => {
           <input
             type="text"
             value={author}
+            placeholder="write author here" // ✅ added
             onChange={({ target }) => setAuthor(target.value)}
           />
         </div>
@@ -47,6 +42,7 @@ const BlogForm = ({ createBlog }) => {
           <input
             type="text"
             value={url}
+            placeholder="write url here"    // ✅ added
             onChange={({ target }) => setUrl(target.value)}
           />
         </div>
