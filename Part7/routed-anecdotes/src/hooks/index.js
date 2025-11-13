@@ -11,10 +11,15 @@ export const useField = (type) => {
     setValue('')
   }
 
-  return {
+  // this object will be spread into the <input>
+  const inputProps = {
     type,
     value,
-    onChange,
+    onChange
+  }
+
+  return {
+    inputProps,
     reset
   }
 }

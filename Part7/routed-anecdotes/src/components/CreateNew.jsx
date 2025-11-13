@@ -1,5 +1,3 @@
-/* eslint-disable react-refresh/only-export-components */
-/* eslint-disable react/prop-types */
 import { useField } from '../hooks'
 
 const CreateNew = ({ addNew }) => {
@@ -10,9 +8,9 @@ const CreateNew = ({ addNew }) => {
   const handleSubmit = (event) => {
     event.preventDefault()
     addNew({
-      content: content.value,
-      author: author.value,
-      info: info.value,
+      content: content.inputProps.value,
+      author: author.inputProps.value,
+      info: info.inputProps.value,
       votes: 0
     })
   }
@@ -28,15 +26,15 @@ const CreateNew = ({ addNew }) => {
     <form onSubmit={handleSubmit}>
       <div>
         content
-        <input {...content} />
+        <input {...content.inputProps} />
       </div>
       <div>
         author
-        <input {...author} />
+        <input {...author.inputProps} />
       </div>
       <div>
         url for more info
-        <input {...info} />
+        <input {...info.inputProps} />
       </div>
       <button type="submit">create</button>
       <button onClick={handleReset}>reset</button>
