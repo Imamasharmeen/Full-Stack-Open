@@ -1,28 +1,25 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 
-export const useCountry = (name) => {
-  const [country, setCountry] = useState(null)
+export const useResource = (baseUrl) => {
+  const [resources, setResources] = useState([])
 
   useEffect(() => {
-    if (!name) {
-      return
-    }
+    axios.get(baseUrl).then(response => {
+      setResources(response.data)
+    })
+  }, [baseUrl])
 
-    axios
-      .get(`https://studies.cs.helsinki.fi/restcountries/api/name/${name}`)
-      .then(response => {
-        setCountry({
-          data: response.data,
-          found: true
-        })
-      })
-      .catch(() => {
-        setCountry({
-          found: false
-        })
-      })
-  }, [name])
+  const create = async (newObject) => {
+    const response = await axios.post(baseUrl, newObject)
+    setResources(resources.concat(response.data))
+  }
 
-  return country
+  const service = {
+    create
+  }
+
+  return [
+    resources, service
+  ]
 }

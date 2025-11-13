@@ -1,46 +1,37 @@
-import { useState } from 'react'
-import { useCountry } from './hooks'
-
-const Country = ({ country }) => {
-  if (!country) {
-    return null
-  }
-
-  if (!country.found) {
-    return <div>not found...</div>
-  }
-
-  const { data } = country
-
-  return (
-    <div>
-      <h3>{data.name.common}</h3>
-      <div>capital {data.capital}</div>
-      <div>population {data.population}</div>
-      <img src={data.flags.png} height='100' alt={`flag of ${data.name.common}`} />
-    </div>
-  )
-}
-
 const App = () => {
-  const [name, setName] = useState('')
-  const country = useCountry(name)
+  const content = useField('text')
+  const name = useField('text')
+  const number = useField('text')
 
-  const fetch = (e) => {
-    e.preventDefault()
-    setName(e.target.country.value)
+  const [notes, noteService] = useResource('http://localhost:3005/notes')
+  const [persons, personService] = useResource('http://localhost:3005/persons')
+
+  const handleNoteSubmit = (event) => {
+    event.preventDefault()
+    noteService.create({ content: content.value })
+  }
+ 
+  const handlePersonSubmit = (event) => {
+    event.preventDefault()
+    personService.create({ name: name.value, number: number.value })
   }
 
   return (
     <div>
-      <form onSubmit={fetch}>
-        <input name='country' />
-        <button>find</button>
+      <h2>notes</h2>
+      <form onSubmit={handleNoteSubmit}>
+        <input {...content} />
+        <button>create</button>
       </form>
+      {notes.map(n => <p key={n.id}>{n.content}</p>)}
 
-      <Country country={country} />
+      <h2>persons</h2>
+      <form onSubmit={handlePersonSubmit}>
+        name <input {...name} /> <br/>
+        number <input {...number} />
+        <button>create</button>
+      </form>
+      {persons.map(p => <p key={p.id}>{p.name} {p.number}</p>)}
     </div>
   )
 }
-
-export default App
