@@ -1,15 +1,12 @@
 /* eslint-disable react/prop-types */
-const Notification = ({ message }) => {
-  const style = {
-    border: 'solid',
-    padding: 10,
-    borderWidth: 1,
-    margin: 10
-  }
+import { useSelector } from 'react-redux'
 
-  if (!message) return null
+const Notification = () => {
+  const notification = useSelector(state => state.notification)
 
-  return <div style={style}>{message}</div>
+  if (!notification) return null
+
+  return <div className="notification">{notification}</div>
 }
 
 export default Notification

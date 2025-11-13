@@ -6,6 +6,8 @@ import About from './components/About'
 import Footer from './components/Footer'
 import Anecdote from './components/Anecdote'
 import Notification from './components/Notification'
+import { Provider } from 'react-redux'
+import store from './store'
 
 const App = () => {
   const [anecdotes, setAnecdotes] = useState([...])
@@ -25,6 +27,7 @@ const App = () => {
   const padding = { paddingRight: 5 }
 
   return (
+    <Provider store={store}>
     <div>
       <h1>Software anecdotes</h1>
 
@@ -45,6 +48,7 @@ const App = () => {
 
       <Footer />
     </div>
+    </Provider>
   )
 }
 
