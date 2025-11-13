@@ -1,37 +1,41 @@
 const baseUrl = 'http://localhost:3001/anecdotes'
 
 export const getAnecdotes = async () => {
-  const response = await fetch(baseUrl)
-  if (!response.ok) {
+  const res = await fetch(baseUrl)
+  if (!res.ok) {
     throw new Error('anecdote service not available due to problems in server')
   }
-  return await response.json()
+  return await res.json()
 }
+
 export const createAnecdote = async (newAnecdote) => {
   if (newAnecdote.content.length < 5) {
     throw new Error('too short anecdote')
   }
 
-  const response = await fetch(baseUrl, {
+  const res = await fetch(baseUrl, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(newAnecdote)
   })
 
-  if (!response.ok) throw new Error('failed to create anecdote')
+  if (!res.ok) {
+    throw new Error('failed to create anecdote')
+  }
 
-  return await response.json()
+  return await res.json()
 }
+
 export const updateAnecdote = async (updated) => {
-  const response = await fetch(`${baseUrl}/${updated.id}`, {
+  const res = await fetch(`${baseUrl}/${updated.id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(updated)
   })
 
-  if (!response.ok) throw new Error('failed to vote')
+  if (!res.ok) {
+    throw new Error('failed to update anecdote')
+  }
 
-  return await response.json()
+  return await res.json()
 }
-
-
