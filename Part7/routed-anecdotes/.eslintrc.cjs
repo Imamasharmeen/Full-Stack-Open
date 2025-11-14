@@ -7,7 +7,8 @@ module.exports = {
   extends: [
     'eslint:recommended',
     'plugin:react/recommended',
-    'plugin:prettier/recommended'   // <-- integrates Prettier with ESLint
+    'plugin:react-hooks/recommended',
+    'prettier',
   ],
   parserOptions: {
     ecmaFeatures: {
@@ -16,9 +17,8 @@ module.exports = {
     ecmaVersion: 12,
     sourceType: 'module',
   },
-  plugins: ['react', 'prettier'],
+  plugins: ['prettier'],
   rules: {
-    'react/react-in-jsx-scope': 'off',
-    'prettier/prettier': 'error',   // <-- Prettier errors show in ESLint
+    'prettier/prettier': 'error',
   },
 }
